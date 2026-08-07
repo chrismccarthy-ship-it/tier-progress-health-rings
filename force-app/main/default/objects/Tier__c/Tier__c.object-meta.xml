@@ -19,33 +19,4 @@
     <searchLayouts/>
     <sharingModel>ReadWrite</sharingModel>
     <visibility>Public</visibility>
-    <listViews>
-        <fullName>All_Tiers</fullName>
-        <columns>NAME</columns>
-        <columns>Account__c</columns>
-        <columns>Current_Tier__c</columns>
-        <columns>Next_Tier__c</columns>
-        <columns>Progress_Percent__c</columns>
-        <columns>Items_Outstanding__c</columns>
-        <columns>Status__c</columns>
-        <columns>Target_Date__c</columns>
-        <filterScope>Everything</filterScope>
-        <label>All Tiers</label>
-    </listViews>
-    <listViews>
-        <fullName>In_Progress</fullName>
-        <columns>NAME</columns>
-        <columns>Account__c</columns>
-        <columns>Next_Tier__c</columns>
-        <columns>Progress_Percent__c</columns>
-        <columns>Items_Outstanding__c</columns>
-        <columns>Target_Date__c</columns>
-        <filterScope>Everything</filterScope>
-        <filters>
-            <field>Status__c</field>
-            <operation>equals</operation>
-            <value>In Progress</value>
-        </filters>
-        <label>In Progress</label>
-    </listViews>
 </CustomObject>

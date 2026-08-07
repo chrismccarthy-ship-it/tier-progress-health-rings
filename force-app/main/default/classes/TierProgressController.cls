@@ -95,7 +95,7 @@ public with sharing class TierProgressController {
         }
 
         List<Tier__c> tiers = [
-            SELECT Id, Name, Account__c, Account.Name,
+            SELECT Id, Name, Account__c, Account__r.Name,
                    Current_Tier__c, Next_Tier__c, Status__c,
                    Target_Date__c, Ring_Color__c
             FROM Tier__c
@@ -147,7 +147,7 @@ public with sharing class TierProgressController {
             if (!live.isEmpty()) {
                 return live[0].Id;
             }
-            List<Tier__c> any = [
+            List<Tier__c> mostRecent = [
                 SELECT Id
                 FROM Tier__c
                 WHERE Account__c = :recordId
@@ -155,7 +155,7 @@ public with sharing class TierProgressController {
                 ORDER BY CreatedDate DESC
                 LIMIT 1
             ];
-            return any.isEmpty() ? null : any[0].Id;
+            return mostRecent.isEmpty() ? null : mostRecent[0].Id;
         }
 
         throw new AuraHandledException(
@@ -171,7 +171,7 @@ public with sharing class TierProgressController {
         TierProgress p = new TierProgress();
         p.tierId      = tier.Id;
         p.tierName    = tier.Name;
-        p.accountName = tier.Account != null ? tier.Account.Name : null;
+        p.accountName = tier.Account__r != null ? tier.Account__r.Name : null;
         p.currentTier = tier.Current_Tier__c;
         p.nextTier    = tier.Next_Tier__c;
         p.status      = tier.Status__c;
