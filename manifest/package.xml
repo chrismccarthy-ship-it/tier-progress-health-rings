@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Everything in this package. Equivalent to:
+
+    sf project deploy start --source-dir force-app --target-org <alias>
+
+  Kept as a manifest so the package can also be deployed into an org that
+  already holds unrelated source you would rather not touch.
+-->
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>TierProgressController</members>
+        <members>TierProgressControllerTest</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>Tier__c</members>
+        <members>Tier_List_Item__c</members>
+        <name>CustomObject</name>
+    </types>
+    <types>
+        <members>Tier__c.Account__c</members>
+        <members>Tier__c.Current_Tier__c</members>
+        <members>Tier__c.Next_Tier__c</members>
+        <members>Tier__c.Status__c</members>
+        <members>Tier__c.Ring_Color__c</members>
+        <members>Tier__c.Target_Date__c</members>
+        <members>Tier__c.Total_Weight__c</members>
+        <members>Tier__c.Earned_Weight__c</members>
+        <members>Tier__c.Items_Outstanding__c</members>
+        <members>Tier__c.Progress_Percent__c</members>
+        <members>Tier_List_Item__c.Tier__c</members>
+        <members>Tier_List_Item__c.Category__c</members>
+        <members>Tier_List_Item__c.Measure_Type__c</members>
+        <members>Tier_List_Item__c.Completed__c</members>
+        <members>Tier_List_Item__c.Current_Value__c</members>
+        <members>Tier_List_Item__c.Target_Value__c</members>
+        <members>Tier_List_Item__c.Unit__c</members>
+        <members>Tier_List_Item__c.Weight__c</members>
+        <members>Tier_List_Item__c.Sequence__c</members>
+        <members>Tier_List_Item__c.How_To_Complete__c</members>
+        <members>Tier_List_Item__c.Progress_Percent__c</members>
+        <members>Tier_List_Item__c.Is_Complete__c</members>
+        <members>Tier_List_Item__c.Weighted_Progress__c</members>
+        <name>CustomField</name>
+    </types>
+    <types>
+        <members>Tier__c</members>
+        <members>Tier_List_Item__c</members>
+        <name>CustomTab</name>
+    </types>
+    <types>
+        <members>tierProgressRing</members>
+        <name>LightningComponentBundle</name>
+    </types>
+    <types>
+        <members>Tier_Progress_User</members>
+        <name>PermissionSet</name>
+    </types>
+    <version>62.0</version>
+</Package>

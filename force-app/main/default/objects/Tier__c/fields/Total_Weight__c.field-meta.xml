@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Total_Weight__c</fullName>
+    <label>Total Weight</label>
+    <description>Sum of Weight__c across every child Tier List Item — the denominator of the completion percentage.</description>
+    <type>Summary</type>
+    <summarizedField>Tier_List_Item__c.Weight__c</summarizedField>
+    <summaryForeignKey>Tier_List_Item__c.Tier__c</summaryForeignKey>
+    <summaryOperation>sum</summaryOperation>
+    <trackTrending>false</trackTrending>
+</CustomField>

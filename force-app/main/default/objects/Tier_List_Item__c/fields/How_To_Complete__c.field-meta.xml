@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>How_To_Complete__c</fullName>
+    <label>How To Complete</label>
+    <description>One line of guidance shown beneath the requirement in the outstanding list, so the ring says what to do rather than only what is missing.</description>
+    <type>Text</type>
+    <length>255</length>
+    <required>false</required>
+    <unique>false</unique>
+    <trackTrending>false</trackTrending>
+</CustomField>

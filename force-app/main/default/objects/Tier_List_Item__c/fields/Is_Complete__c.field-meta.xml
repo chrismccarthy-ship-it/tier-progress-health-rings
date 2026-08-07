@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Is_Complete__c</fullName>
+    <label>Is Complete</label>
+    <description>True once the requirement is fully satisfied, whichever way it is measured. Drives the Items_Outstanding__c roll-up on the parent Tier.</description>
+    <type>Checkbox</type>
+    <formula>Progress_Percent__c &gt;= 100</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <trackTrending>false</trackTrending>
+</CustomField>

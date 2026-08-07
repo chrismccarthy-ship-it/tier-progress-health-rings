@@ -1,0 +1,54 @@
+# Salesforce CLI / DX local files
+.sf/
+.sfdx/
+.localdevserver/
+deploy-options.json
+config/user-def.json
+.sf-deploy-id
+.sfdx-deploy-id
+
+# LWC tooling
+**/lwc/jsconfig.json
+coverage/
+
+# Node / npm
+node_modules/
+package-lock.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Eslint / Prettier
+.eslintcache
+.prettierrc.local
+
+# Logs
+logs/
+*.log
+
+# Build outputs / bundles
+*.zip
+*.tar.gz
+*.7z
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# Local development overrides
+force-app/main/default/namedCredentials/SelfOrg.namedCredential-meta.xml.local
+.env
+.env.local

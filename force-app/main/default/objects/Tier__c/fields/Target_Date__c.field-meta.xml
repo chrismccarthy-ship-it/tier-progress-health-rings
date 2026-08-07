@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Target_Date__c</fullName>
+    <label>Target Date</label>
+    <description>Date the Account is expected to reach Next_Tier__c. Shown under the ring.</description>
+    <type>Date</type>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+</CustomField>

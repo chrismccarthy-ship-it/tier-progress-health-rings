@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Tier__c</fullName>
+    <label>Tier</label>
+    <type>MasterDetail</type>
+    <referenceTo>Tier__c</referenceTo>
+    <relationshipLabel>Tier List Items</relationshipLabel>
+    <relationshipName>Tier_List_Items</relationshipName>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>true</reparentableMasterDetail>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+    <trackTrending>false</trackTrending>
+</CustomField>

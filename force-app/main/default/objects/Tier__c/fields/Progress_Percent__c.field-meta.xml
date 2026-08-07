@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Progress_Percent__c</fullName>
+    <label>Progress Percent</label>
+    <description>Weighted completion toward Next_Tier__c, 0-100. Reporting mirror of the number rendered in the centre of the ring; the LWC recomputes the same figure from the child rows so it is correct the instant an item changes.</description>
+    <type>Number</type>
+    <precision>5</precision>
+    <scale>1</scale>
+    <formula>IF(NULLVALUE(Total_Weight__c, 0) &gt; 0, NULLVALUE(Earned_Weight__c, 0) / Total_Weight__c * 100, 0)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+</CustomField>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Progress_Percent__c</fullName>
+    <label>Progress Percent</label>
+    <description>How far along this single requirement is, 0-100. Numeric items are Current/Target capped at 100; Checkbox items are 0 or 100. Deliberately a Number rather than a Percent field: percent fields are rescaled when referenced from other formulas, which would silently break Weighted_Progress__c.</description>
+    <type>Number</type>
+    <precision>5</precision>
+    <scale>1</scale>
+    <formula>IF(
+  ISPICKVAL(Measure_Type__c, &quot;Numeric&quot;),
+  IF(
+    NULLVALUE(Target_Value__c, 0) &gt; 0,
+    MIN(100, NULLVALUE(Current_Value__c, 0) / Target_Value__c * 100),
+    0
+  ),
+  IF(Completed__c, 100, 0)
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+</CustomField>

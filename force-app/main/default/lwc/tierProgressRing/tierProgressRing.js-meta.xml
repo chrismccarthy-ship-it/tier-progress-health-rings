@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Tier Progress Ring</masterLabel>
+    <description>Apple Health style progress ring showing weighted completion toward the next tier, plus the requirements still outstanding.</description>
+    <targets>
+        <target>lightning__RecordPage</target>
+        <target>lightningCommunity__Page</target>
+        <target>lightningCommunity__Default</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage">
+            <objects>
+                <object>Account</object>
+                <object>Tier__c</object>
+            </objects>
+            <property name="cardTitle" type="String" label="Card Title"
+                default="Tier Progress"
+                description="Heading shown on the card."/>
+            <property name="hideOutstanding" type="Boolean" label="Hide Outstanding List"
+                default="false"
+                description="Show the ring on its own, without the list of requirements still to complete."/>
+            <property name="maxOutstanding" type="Integer" label="Max Outstanding Shown"
+                default="0"
+                description="Cap the number of outstanding requirements listed. 0 shows all of them."/>
+        </targetConfig>
+        <targetConfig targets="lightningCommunity__Default">
+            <property name="recordId" type="String" label="Record Id"
+                default="{!recordId}"
+                description="Tier or Account record the ring reads from."/>
+            <property name="cardTitle" type="String" label="Card Title"
+                default="Tier Progress"
+                description="Heading shown on the card."/>
+            <property name="hideOutstanding" type="Boolean" label="Hide Outstanding List"
+                default="false"
+                description="Show the ring on its own, without the list of requirements still to complete."/>
+            <property name="maxOutstanding" type="Integer" label="Max Outstanding Shown"
+                default="0"
+                description="Cap the number of outstanding requirements listed. 0 shows all of them."/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

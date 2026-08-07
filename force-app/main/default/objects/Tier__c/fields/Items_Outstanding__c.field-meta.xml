@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Items_Outstanding__c</fullName>
+    <label>Items Outstanding</label>
+    <description>Count of child Tier List Items that are not yet complete — the list the LWC renders under the ring.</description>
+    <type>Summary</type>
+    <summaryForeignKey>Tier_List_Item__c.Tier__c</summaryForeignKey>
+    <summaryOperation>count</summaryOperation>
+    <summaryFilterItems>
+        <field>Tier_List_Item__c.Is_Complete__c</field>
+        <operation>equals</operation>
+        <value>false</value>
+    </summaryFilterItems>
+    <trackTrending>false</trackTrending>
+</CustomField>

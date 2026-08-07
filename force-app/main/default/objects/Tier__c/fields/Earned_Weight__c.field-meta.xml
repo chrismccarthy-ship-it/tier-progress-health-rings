@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Earned_Weight__c</fullName>
+    <label>Earned Weight</label>
+    <description>Sum of Weighted_Progress__c across every child Tier List Item — the numerator of the completion percentage. Partially-complete numeric items contribute a fraction of their weight.</description>
+    <type>Summary</type>
+    <summarizedField>Tier_List_Item__c.Weighted_Progress__c</summarizedField>
+    <summaryForeignKey>Tier_List_Item__c.Tier__c</summaryForeignKey>
+    <summaryOperation>sum</summaryOperation>
+    <trackTrending>false</trackTrending>
+</CustomField>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Weight__c</fullName>
+    <label>Weight</label>
+    <description>How much this requirement counts toward the tier. Items are relative to each other, so 2 is worth twice as much as 1.</description>
+    <inlineHelpText>Relative weight against the other items on this Tier. Defaults to 1.</inlineHelpText>
+    <type>Number</type>
+    <precision>5</precision>
+    <scale>2</scale>
+    <defaultValue>1</defaultValue>
+    <required>false</required>
+    <unique>false</unique>
+    <trackTrending>false</trackTrending>
+</CustomField>

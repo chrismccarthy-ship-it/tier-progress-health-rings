@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Ring_Color__c</fullName>
+    <label>Ring Colour Override</label>
+    <description>Optional hex colour (e.g. #D4A017) for the overall ring. Leave blank to colour the ring from Next_Tier__c.</description>
+    <inlineHelpText>Hex colour including the leading #, e.g. #D4A017. Leave blank to use the default colour for the next tier.</inlineHelpText>
+    <type>Text</type>
+    <length>7</length>
+    <required>false</required>
+    <unique>false</unique>
+    <trackTrending>false</trackTrending>
+</CustomField>

@@ -1,0 +1,172 @@
+<template>
+    <lightning-card icon-name="custom:custom48">
+        <span slot="title">{resolvedTitle}</span>
+
+        <div slot="actions">
+            <template lwc:if={showStatusBadge}>
+                <lightning-badge label={progress.status} class={statusBadgeClass}></lightning-badge>
+            </template>
+            <lightning-button-icon icon-name="utility:refresh" variant="bare"
+                alternative-text="Refresh tier progress" title="Refresh"
+                onclick={handleRefresh} class="slds-m-left_x-small"></lightning-button-icon>
+        </div>
+
+        <template lwc:if={isLoading}>
+            <div class="slds-p-around_x-large slds-align_absolute-center">
+                <lightning-spinner alternative-text="Loading tier progress" size="small"></lightning-spinner>
+            </div>
+        </template>
+
+        <template lwc:elseif={errorMessage}>
+            <div class="slds-p-around_medium slds-text-color_destructive" role="alert">
+                {errorMessage}
+            </div>
+        </template>
+
+        <template lwc:elseif={isEmpty}>
+            <div class="slds-p-around_x-large slds-align_absolute-center slds-text-align_center">
+                <div>
+                    <lightning-icon icon-name="utility:trending" size="small"
+                        class="slds-m-bottom_x-small"></lightning-icon>
+                    <p class="slds-text-body_regular slds-text-color_weak">
+                        No tier progression is being tracked here yet.
+                    </p>
+                    <p class="slds-text-body_small slds-text-color_weak slds-m-top_xx-small">
+                        Create a Tier record with its requirements to light up the ring.
+                    </p>
+                </div>
+            </div>
+        </template>
+
+        <template lwc:else>
+            <div class="slds-p-horizontal_medium slds-p-bottom_medium">
+
+                <div class="ring-layout">
+
+                    <!-- ------------------------------------------------ -->
+                    <!-- Concentric arcs                                   -->
+                    <!-- ------------------------------------------------ -->
+                    <div class="ring-wrap">
+                        <svg class="ring" viewBox="0 0 200 200" role="img"
+                            aria-label={ringAriaLabel} xmlns="http://www.w3.org/2000/svg">
+                            <g transform="rotate(-90 100 100)">
+                                <template for:each={displayRings} for:item="ring">
+                                    <circle key={ring.trackKey} class="ring__track"
+                                        cx="100" cy="100" r={ring.radius}
+                                        stroke-width={ring.strokeWidth}></circle>
+                                </template>
+                                <template for:each={displayRings} for:item="ring">
+                                    <circle key={ring.key} class="ring__value"
+                                        cx="100" cy="100" r={ring.radius}
+                                        stroke={ring.color}
+                                        stroke-width={ring.strokeWidth}
+                                        stroke-dasharray={ring.circumference}
+                                        stroke-dashoffset={ring.dashOffset}></circle>
+                                </template>
+                            </g>
+                        </svg>
+
+                        <div class="ring__center" aria-hidden="true">
+                            <span class="ring__percent">{percentLabel}</span>
+                            <template lwc:if={progress.nextTier}>
+                                <span class="ring__caption">to {progress.nextTier}</span>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- ------------------------------------------------ -->
+                    <!-- Summary + legend                                  -->
+                    <!-- ------------------------------------------------ -->
+                    <div class="ring-summary">
+                        <p class="tier-path">
+                            <span class="tier-path__from">{currentTierLabel}</span>
+                            <lightning-icon icon-name="utility:forward" size="xx-small"
+                                class="slds-m-horizontal_xx-small"></lightning-icon>
+                            <span class="tier-path__to">{nextTierLabel}</span>
+                        </p>
+
+                        <p class="slds-text-body_small slds-text-color_weak slds-m-top_xx-small">
+                            {completionSummary}
+                        </p>
+
+                        <template lwc:if={targetDateLabel}>
+                            <p class="slds-text-body_small slds-text-color_weak slds-m-top_xx-small">
+                                Target date: {targetDateLabel}
+                            </p>
+                        </template>
+
+                        <template lwc:if={showLegend}>
+                            <ul class="legend slds-m-top_small">
+                                <template for:each={displayRings} for:item="ring">
+                                    <li key={ring.key} class="legend__row">
+                                        <span class="legend__dot" style={ring.swatchStyle}></span>
+                                        <span class="legend__label">{ring.label}</span>
+                                        <span class="legend__value">{ring.percentLabel}</span>
+                                        <span class="legend__count">{ring.countLabel}</span>
+                                    </li>
+                                </template>
+                            </ul>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- ---------------------------------------------------- -->
+                <!-- What is still outstanding                             -->
+                <!-- ---------------------------------------------------- -->
+                <template lwc:if={showOutstanding}>
+                    <div class="outstanding slds-m-top_medium">
+                        <h3 class="slds-text-title_caps slds-text-color_weak slds-m-bottom_x-small">
+                            {outstandingHeading}
+                        </h3>
+
+                        <template lwc:if={hasOutstanding}>
+                            <ul class="outstanding__list">
+                                <template for:each={visibleOutstanding} for:item="item">
+                                    <li key={item.id} class="outstanding__item">
+                                        <div class="outstanding__head">
+                                            <span class="outstanding__label">{item.label}</span>
+                                            <span class="outstanding__percent">{item.percentLabel}</span>
+                                        </div>
+
+                                        <div class="bar" role="progressbar" aria-label={item.label}
+                                            aria-valuemin="0" aria-valuemax="100"
+                                            aria-valuenow={item.ariaValue}>
+                                            <div class="bar__fill" style={item.barStyle}></div>
+                                        </div>
+
+                                        <div class="outstanding__meta">
+                                            <template lwc:if={item.category}>
+                                                <span class="outstanding__chip"
+                                                    style={item.chipStyle}>{item.category}</span>
+                                            </template>
+                                            <span class="outstanding__remaining">{item.remaining}</span>
+                                        </div>
+
+                                        <template lwc:if={item.howToComplete}>
+                                            <p class="outstanding__how">{item.howToComplete}</p>
+                                        </template>
+                                    </li>
+                                </template>
+                            </ul>
+
+                            <template lwc:if={hiddenOutstandingLabel}>
+                                <p class="slds-text-body_small slds-text-color_weak slds-m-top_x-small">
+                                    {hiddenOutstandingLabel}
+                                </p>
+                            </template>
+                        </template>
+
+                        <template lwc:else>
+                            <div class="all-clear">
+                                <lightning-icon icon-name="utility:success" size="x-small"
+                                    variant="success" class="slds-m-right_x-small"></lightning-icon>
+                                <span>{allClearMessage}</span>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+
+            </div>
+        </template>
+    </lightning-card>
+</template>

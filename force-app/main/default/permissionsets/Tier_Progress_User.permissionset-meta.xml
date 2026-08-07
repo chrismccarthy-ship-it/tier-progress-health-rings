@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>Tier Progress User</label>
+    <description>Grants access to the Tier and Tier List Item objects and the controller behind the tierProgressRing LWC. Kept separate from EmailToCase_AI_Admin so tiering can be rolled out to CSMs without handing them the AI resolver internals.</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <license>Salesforce</license>
+
+    <classAccesses><apexClass>TierProgressController</apexClass><enabled>true</enabled></classAccesses>
+
+    <objectPermissions>
+        <object>Tier__c</object>
+        <allowCreate>true</allowCreate>
+        <allowRead>true</allowRead>
+        <allowEdit>true</allowEdit>
+        <allowDelete>false</allowDelete>
+        <viewAllRecords>false</viewAllRecords>
+        <modifyAllRecords>false</modifyAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <object>Tier_List_Item__c</object>
+        <allowCreate>true</allowCreate>
+        <allowRead>true</allowRead>
+        <allowEdit>true</allowEdit>
+        <allowDelete>true</allowDelete>
+        <viewAllRecords>false</viewAllRecords>
+        <modifyAllRecords>false</modifyAllRecords>
+    </objectPermissions>
+
+    <!-- Tier__c — editable -->
+    <fieldPermissions><field>Tier__c.Account__c</field><editable>true</editable><readable>true</readable></fieldPermissions>
+    <fieldPermissions><field>Tier__c.Current_Tier__c</field><editable>true</editable><readable>true</readable></fieldPermissions>
+    <fieldPermissions><field>Tier__c.Next_Tier__c</field><editable>true</editable><readable>true</readable></fieldPermissions>
+    <fieldPermissions><field>Tier__c.Status__c</field><editable>true</editable><readable>true</readable></fieldPermissions>
+    <fieldPermissions><field>Tier__c.Ring_Color__c</field><editable>true</editable><readable>true</readable></fieldPermissions>
+    <fieldPermissions><field>Tier__c.Target_Date__c</field><editable>true</editable><readable>true</readable></fieldPermissions>
+
+    <!-- Tier__c — derived, read-only by definition -->
+    <fieldPermissions><field>Tier__c.Total_Weight__c</field><editable>false</editable><readable>true</readable></fieldPermissions>
+    <fieldPermissions><field>Tier__c.Earned_Weight__c</field><editable>false</editable><readable>true</readable></fieldPermissions>
+    <fieldPermissions><field>Tier__c.Items_Outstanding__c</field><editable>false</editable><readable>true</readable></fieldPermissions>
+    <fieldPermissions><field>Tier__c.Progress_Percent__c</field><editable>false</editable><readable>true</readable></fieldPermissions>
+
+    <!-- Tier_List_Item__c — editable -->
+    <fieldPermissions><field>Tier_List_Item__c.Category__c</field><editable>true</editable><readable>true</readable></fieldPermissions>
+    <fieldPermissions><field>Tier_List_Item__c.Measure_Type__c</field><editable>true</editable><readable>true</readable></fieldPermissions>
+    <fieldPermissions><field>Tier_List_Item__c.Completed__c</field><editable>true</editable><readable>true</readable></fieldPermissions>
+    <fieldPermissions><field>Tier_List_Item__c.Current_Value__c</field><editable>true</editable><readable>true</readable></fieldPermissions>
+    <fieldPermissions><field>Tier_List_Item__c.Target_Value__c</field><editable>true</editable><readable>true</readable></fieldPermissions>
+    <fieldPermissions><field>Tier_List_Item__c.Unit__c</field><editable>true</editable><readable>true</readable></fieldPermissions>
+    <fieldPermissions><field>Tier_List_Item__c.Weight__c</field><editable>true</editable><readable>true</readable></fieldPermissions>
+    <fieldPermissions><field>Tier_List_Item__c.Sequence__c</field><editable>true</editable><readable>true</readable></fieldPermissions>
+    <fieldPermissions><field>Tier_List_Item__c.How_To_Complete__c</field><editable>true</editable><readable>true</readable></fieldPermissions>
+
+    <!-- Tier_List_Item__c — derived, read-only by definition -->
+    <fieldPermissions><field>Tier_List_Item__c.Progress_Percent__c</field><editable>false</editable><readable>true</readable></fieldPermissions>
+    <fieldPermissions><field>Tier_List_Item__c.Is_Complete__c</field><editable>false</editable><readable>true</readable></fieldPermissions>
+    <fieldPermissions><field>Tier_List_Item__c.Weighted_Progress__c</field><editable>false</editable><readable>true</readable></fieldPermissions>
+
+    <tabSettings>
+        <tab>Tier__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>Tier_List_Item__c</tab>
+        <visibility>Available</visibility>
+    </tabSettings>
+</PermissionSet>
