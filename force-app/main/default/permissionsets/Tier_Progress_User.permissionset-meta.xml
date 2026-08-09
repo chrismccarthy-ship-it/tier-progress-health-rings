@@ -28,6 +28,8 @@
 
     <!-- Tier__c — editable -->
     <fieldPermissions><field>Tier__c.Account__c</field><editable>true</editable><readable>true</readable></fieldPermissions>
+    <fieldPermissions><field>Tier__c.Contact__c</field><editable>true</editable><readable>true</readable></fieldPermissions>
+    <fieldPermissions><field>Tier__c.Related_Record_Id__c</field><editable>true</editable><readable>true</readable></fieldPermissions>
     <fieldPermissions><field>Tier__c.Current_Tier__c</field><editable>true</editable><readable>true</readable></fieldPermissions>
     <fieldPermissions><field>Tier__c.Next_Tier__c</field><editable>true</editable><readable>true</readable></fieldPermissions>
     <fieldPermissions><field>Tier__c.Status__c</field><editable>true</editable><readable>true</readable></fieldPermissions>

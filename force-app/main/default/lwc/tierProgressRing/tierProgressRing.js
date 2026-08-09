@@ -182,9 +182,9 @@ export default class TierProgressRing extends LightningElement {
 
     get completionSummary() {
         if (!this.progress) return '';
-        const { itemsComplete = 0, itemsTotal = 0, accountName } = this.progress;
+        const { itemsComplete = 0, itemsTotal = 0, subjectName } = this.progress;
         const base = `${itemsComplete} of ${itemsTotal} requirements complete`;
-        return accountName ? `${accountName} · ${base}` : base;
+        return subjectName ? `${subjectName} · ${base}` : base;
     }
 
     get targetDateLabel() {

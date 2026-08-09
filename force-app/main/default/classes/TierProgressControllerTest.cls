@@ -301,7 +301,7 @@ private class TierProgressControllerTest {
 
         System.assertNotEquals(null, p, 'Account should resolve to its live tier');
         System.assertEquals(t.Id, p.tierId, 'Wrong tier resolved');
-        System.assertEquals('Tiering Test Co', p.accountName, 'Account name should come through');
+        System.assertEquals('Tiering Test Co', p.subjectName, 'Account name should come through');
         System.assertEquals('Silver', p.currentTier, 'Current tier should come through');
         System.assertEquals('Gold', p.nextTier, 'Next tier should come through');
         System.assertEquals(Date.today().addDays(90), p.targetDate, 'Target date should come through');
@@ -348,19 +348,16 @@ private class TierProgressControllerTest {
     }
 
     @isTest
-    static void testUnsupportedObjectThrows() {
-        // A well-formed 15-character Case id. No DML needed — resolution
-        // inspects the key prefix and gives up before it queries anything.
+    static void testUnrelatedRecordRendersEmptyStateRatherThanThrowing() {
+        // A well-formed 15-character Case id with nothing tracked against it.
+        // The ring can now sit on any object, so this is an empty state.
         Id caseId = Id.valueOf('500000000000000');
-        Boolean threw = false;
 
-        try {
+        TierProgressController.TierProgress p =
             TierProgressController.getTierProgress(caseId);
-        } catch (AuraHandledException expected) {
-            threw = true;
-        }
 
-        System.assert(threw, 'Expected an AuraHandledException for a Case record page');
+        System.assertEquals(null, p,
+            'An unrelated record should render the empty state, not throw');
     }
 
     @isTest
@@ -374,6 +371,141 @@ private class TierProgressControllerTest {
         }
 
         System.assert(threw, 'Expected an AuraHandledException for a null id');
+    }
+
+    // ------------------------------------------------------------------
+    // Resolution across Contact and the generic pointer
+    // ------------------------------------------------------------------
+
+    @isTest
+    static void testResolvesFromAContactRecordPage() {
+        Account a = newAccount();
+        Contact c = new Contact(LastName = 'Partner Person', AccountId = a.Id);
+        insert c;
+
+        Tier__c t = new Tier__c(
+            Name = 'Partner Person to Gold',
+            Contact__c = c.Id,
+            Current_Tier__c = 'Silver',
+            Next_Tier__c = 'Gold',
+            Status__c = 'In Progress'
+        );
+        insert t;
+        insert checkboxItem(t.Id, 'Only item', 'Adoption', 1, false);
+
+        TierProgressController.TierProgress p =
+            TierProgressController.getTierProgress(c.Id);
+
+        System.assertNotEquals(null, p, 'A Contact should resolve its own tier');
+        System.assertEquals(t.Id, p.tierId, 'Wrong tier resolved');
+        System.assertEquals('Partner Person', p.subjectName,
+            'Contact name should come through as the subject');
+    }
+
+    @isTest
+    static void testContactWithoutItsOwnTierInheritsTheAccountTier() {
+        Account a = newAccount();
+        Tier__c accountTier = newTier(a.Id, 'In Progress');
+        insert checkboxItem(accountTier.Id, 'Only item', 'Adoption', 1, false);
+
+        Contact c = new Contact(LastName = 'Partner Person', AccountId = a.Id);
+        insert c;
+
+        TierProgressController.TierProgress p =
+            TierProgressController.getTierProgress(c.Id);
+
+        System.assertNotEquals(null, p,
+            'A partner contact should fall back to its account tier');
+        System.assertEquals(accountTier.Id, p.tierId, 'Wrong tier resolved');
+    }
+
+    @isTest
+    static void testContactPrefersItsOwnTierOverTheAccountTier() {
+        Account a = newAccount();
+        Tier__c accountTier = newTier(a.Id, 'In Progress');
+
+        Contact c = new Contact(LastName = 'Partner Person', AccountId = a.Id);
+        insert c;
+        Tier__c contactTier = new Tier__c(
+            Name = 'Partner Person to Gold',
+            Contact__c = c.Id,
+            Next_Tier__c = 'Gold',
+            Status__c = 'In Progress'
+        );
+        insert contactTier;
+
+        TierProgressController.TierProgress p =
+            TierProgressController.getTierProgress(c.Id);
+
+        System.assertEquals(contactTier.Id, p.tierId,
+            'The contact own tier should win over the account fallback');
+    }
+
+    /**
+     * The generic pointer is what lets the ring sit on the standard Partner
+     * object, PRM records, or any custom object without a lookup per object.
+     * A Case stands in for "some other object" here.
+     */
+    @isTest
+    static void testResolvesFromTheGenericRelatedRecordPointer() {
+        Case c = new Case(Subject = 'Stands in for a partner record');
+        insert c;
+
+        Tier__c t = new Tier__c(
+            Name = 'Generic pointer tier',
+            Related_Record_Id__c = c.Id,
+            Next_Tier__c = 'Gold',
+            Status__c = 'In Progress'
+        );
+        insert t;
+        insert checkboxItem(t.Id, 'Only item', 'Adoption', 1, true);
+
+        TierProgressController.TierProgress p =
+            TierProgressController.getTierProgress(c.Id);
+
+        System.assertNotEquals(null, p,
+            'The generic pointer should resolve from an arbitrary object');
+        System.assertEquals(t.Id, p.tierId, 'Wrong tier resolved');
+        System.assertEquals(100.0, p.percentComplete, 'Percentage should still compute');
+    }
+
+    @isTest
+    static void testGenericPointerMatchesAFifteenCharacterId() {
+        Case c = new Case(Subject = 'Fifteen character id');
+        insert c;
+
+        Tier__c t = new Tier__c(
+            Name = 'Fifteen char pointer',
+            Related_Record_Id__c = String.valueOf(c.Id).substring(0, 15),
+            Next_Tier__c = 'Gold',
+            Status__c = 'In Progress'
+        );
+        insert t;
+
+        TierProgressController.TierProgress p =
+            TierProgressController.getTierProgress(c.Id);
+
+        System.assertNotEquals(null, p,
+            'A hand-typed 15 character id should still match');
+        System.assertEquals(t.Id, p.tierId, 'Wrong tier resolved');
+    }
+
+    @isTest
+    static void testBlankPointerDoesNotMatchEveryRecord() {
+        // Regression guard: an empty id set must match nothing rather than
+        // matching every Tier whose Related_Record_Id__c is blank.
+        Account a = newAccount();
+        Tier__c unrelated = newTier(a.Id, 'In Progress');
+        System.assertNotEquals(null, unrelated.Id, 'Fixture should exist');
+
+        Case c = new Case(Subject = 'Nothing points at me');
+        insert c;
+
+        TierProgressController.TierProgress p =
+            TierProgressController.getTierProgress(c.Id);
+
+        System.assertEquals(null, p,
+            'A tier with a blank pointer must not match an unrelated record');
     }
 
     // ------------------------------------------------------------------

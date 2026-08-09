@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Everything in this package. Equivalent to:
+  Everything in this package. Equivalent to deploying the whole force-app
+  directory, so for most purposes you can just use "sf project deploy start"
+  with the source dir flag instead of this manifest.
 
-    sf project deploy start --source-dir force-app --target-org <alias>
+  Kept around so the package can also be deployed into an org that already
+  holds unrelated source you would rather not touch.
 
-  Kept as a manifest so the package can also be deployed into an org that
-  already holds unrelated source you would rather not touch.
+  (Note for future edits: XML comments cannot contain a double hyphen, so
+  CLI flags must be described in prose here rather than written out.)
 -->
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
@@ -20,6 +23,8 @@
     </types>
     <types>
         <members>Tier__c.Account__c</members>
+        <members>Tier__c.Contact__c</members>
+        <members>Tier__c.Related_Record_Id__c</members>
         <members>Tier__c.Current_Tier__c</members>
         <members>Tier__c.Next_Tier__c</members>
         <members>Tier__c.Status__c</members>

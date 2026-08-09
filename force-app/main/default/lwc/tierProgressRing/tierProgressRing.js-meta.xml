@@ -11,10 +11,6 @@
     </targets>
     <targetConfigs>
         <targetConfig targets="lightning__RecordPage">
-            <objects>
-                <object>Account</object>
-                <object>Tier__c</object>
-            </objects>
             <property name="cardTitle" type="String" label="Card Title"
                 default="Tier Progress"
                 description="Heading shown on the card."/>

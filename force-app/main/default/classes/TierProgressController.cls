@@ -59,7 +59,7 @@ public with sharing class TierProgressController {
     public class TierProgress {
         @AuraEnabled public Id      tierId;
         @AuraEnabled public String  tierName;
-        @AuraEnabled public String  accountName;
+        @AuraEnabled public String  subjectName;
         @AuraEnabled public String  currentTier;
         @AuraEnabled public String  nextTier;
         @AuraEnabled public String  status;
@@ -78,10 +78,12 @@ public with sharing class TierProgressController {
     // ------------------------------------------------------------------
 
     /**
-     * @param recordId Either a Tier__c id (use it directly) or an Account
-     *                 id (find that Account's live tier progression).
-     * @return null when the Account has no Tier__c yet — the LWC renders
-     *         an empty state rather than an error for that case.
+     * @param recordId Any record the ring is sitting on — a Tier__c, an
+     *                 Account (including a Person Account or a partner
+     *                 account), a Contact, or anything pointed at by
+     *                 Related_Record_Id__c.
+     * @return null when nothing is tracked against that record — the LWC
+     *         renders an empty state rather than an error for that case.
      */
     @AuraEnabled(cacheable=true)
     public static TierProgress getTierProgress(Id recordId) {
@@ -95,7 +97,10 @@ public with sharing class TierProgressController {
         }
 
         List<Tier__c> tiers = [
-            SELECT Id, Name, Account__c, Account__r.Name,
+            SELECT Id, Name,
+                   Account__c, Account__r.Name,
+                   Contact__c, Contact__r.Name,
+                   Related_Record_Id__c,
                    Current_Tier__c, Next_Tier__c, Status__c,
                    Target_Date__c, Ring_Color__c
             FROM Tier__c
@@ -125,6 +130,25 @@ public with sharing class TierProgressController {
     // Resolution
     // ------------------------------------------------------------------
 
+    /**
+     * Works out which Tier__c to render from whatever record page the
+     * component was dropped onto.
+     *
+     * Resolution runs most-specific first:
+     *   1. A Tier__c id is used directly.
+     *   2. Account__c / Contact__c, the typed lookups. A Person Account is
+     *      one entity with two ids, so a tier recorded against either side
+     *      surfaces on both pages.
+     *   3. Related_Record_Id__c, the generic pointer — this is what lets the
+     *      ring sit on the standard Partner object, PRM records, or any
+     *      custom object without a lookup field per object.
+     *   4. For a Contact with no tier of its own, its Account's tier. A
+     *      partner contact under a partner account normally wants to see
+     *      the partner's progress.
+     *
+     * @return null when nothing matches, so the LWC shows an empty state
+     *         rather than an error.
+     */
     private static Id resolveTierId(Id recordId) {
         String sobjectName = recordId.getSObjectType().getDescribe().getName();
 
@@ -132,35 +156,105 @@ public with sharing class TierProgressController {
             return recordId;
         }
 
+        Set<Id> accountIds = new Set<Id>();
+        Set<Id> contactIds = new Set<Id>();
+        String idText = String.valueOf(recordId);
+        Set<String> relatedIds = new Set<String>{ idText, idText.substring(0, 15) };
+
         if (sobjectName == 'Account') {
-            // Prefer the tier the Account is actively climbing. Fall back to
-            // the newest record so an all-Achieved Account still shows its
-            // last completed ring instead of an empty state.
-            List<Tier__c> live = [
-                SELECT Id
-                FROM Tier__c
-                WHERE Account__c = :recordId AND Status__c != 'Achieved'
-                WITH USER_MODE
-                ORDER BY CreatedDate DESC
-                LIMIT 1
-            ];
-            if (!live.isEmpty()) {
-                return live[0].Id;
+            accountIds.add(recordId);
+            Id personContact = personContactIdFor(recordId);
+            if (personContact != null) {
+                contactIds.add(personContact);
             }
-            List<Tier__c> mostRecent = [
-                SELECT Id
-                FROM Tier__c
-                WHERE Account__c = :recordId
-                WITH USER_MODE
-                ORDER BY CreatedDate DESC
-                LIMIT 1
-            ];
-            return mostRecent.isEmpty() ? null : mostRecent[0].Id;
+        } else if (sobjectName == 'Contact') {
+            contactIds.add(recordId);
         }
 
-        throw new AuraHandledException(
-            'The tier progress ring can sit on a Tier or an Account record page. ' +
-            'It was placed on ' + sobjectName + '.');
+        Id match = findTier(accountIds, contactIds, relatedIds);
+        if (match != null) {
+            return match;
+        }
+
+        if (sobjectName == 'Contact') {
+            List<Contact> parents = [
+                SELECT AccountId FROM Contact WHERE Id = :recordId WITH USER_MODE LIMIT 1
+            ];
+            if (!parents.isEmpty() && parents[0].AccountId != null) {
+                return findTier(
+                    new Set<Id>{ parents[0].AccountId },
+                    new Set<Id>(),
+                    new Set<String>());
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Prefers the tier still being climbed; falls back to the most recent so
+     * a finished climb still renders instead of an empty state.
+     *
+     * Empty sets match nothing in SOQL, which is what makes it safe to pass
+     * the unused ones through rather than branching per caller.
+     */
+    private static Id findTier(
+        Set<Id> accountIds, Set<Id> contactIds, Set<String> relatedIds
+    ) {
+        if (accountIds.isEmpty() && contactIds.isEmpty() && relatedIds.isEmpty()) {
+            return null;
+        }
+
+        List<Tier__c> live = [
+            SELECT Id
+            FROM Tier__c
+            WHERE (Account__c IN :accountIds
+                   OR Contact__c IN :contactIds
+                   OR Related_Record_Id__c IN :relatedIds)
+              AND Status__c != 'Achieved'
+            WITH USER_MODE
+            ORDER BY CreatedDate DESC
+            LIMIT 1
+        ];
+        if (!live.isEmpty()) {
+            return live[0].Id;
+        }
+
+        List<Tier__c> newest = [
+            SELECT Id
+            FROM Tier__c
+            WHERE (Account__c IN :accountIds
+                   OR Contact__c IN :contactIds
+                   OR Related_Record_Id__c IN :relatedIds)
+            WITH USER_MODE
+            ORDER BY CreatedDate DESC
+            LIMIT 1
+        ];
+        return newest.isEmpty() ? null : newest[0].Id;
+    }
+
+    /**
+     * The contact id behind a Person Account, or null.
+     *
+     * Queried dynamically on purpose: IsPersonAccount and PersonContactId
+     * only exist once Person Accounts are enabled, and a static reference
+     * would stop this class compiling in every org that has not turned
+     * them on.
+     */
+    private static Id personContactIdFor(Id accountId) {
+        if (!Schema.SObjectType.Account.fields.getMap().containsKey('ispersonaccount')) {
+            return null;
+        }
+        try {
+            List<SObject> rows = Database.queryWithBinds(
+                'SELECT PersonContactId FROM Account ' +
+                'WHERE Id = :accountId AND IsPersonAccount = true LIMIT 1',
+                new Map<String, Object>{ 'accountId' => accountId },
+                AccessLevel.USER_MODE);
+            return rows.isEmpty() ? null : (Id) rows[0].get('PersonContactId');
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 
     // ------------------------------------------------------------------
@@ -171,7 +265,9 @@ public with sharing class TierProgressController {
         TierProgress p = new TierProgress();
         p.tierId      = tier.Id;
         p.tierName    = tier.Name;
-        p.accountName = tier.Account__r != null ? tier.Account__r.Name : null;
+        p.subjectName = tier.Account__r != null ? tier.Account__r.Name
+                      : tier.Contact__r != null ? tier.Contact__r.Name
+                      : null;
         p.currentTier = tier.Current_Tier__c;
         p.nextTier    = tier.Next_Tier__c;
         p.status      = tier.Status__c;

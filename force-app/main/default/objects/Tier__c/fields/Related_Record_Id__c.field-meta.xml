@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Related_Record_Id__c</fullName>
+    <label>Related Record Id</label>
+    <description>Generic pointer for objects that have no dedicated lookup here — the standard Partner object, PRM records like PartnerFundClaim, or any custom object. Set it to the record id and the ring resolves from that object&apos;s page with no schema change. Account__c and Contact__c take precedence when both are set.</description>
+    <inlineHelpText>The 15 or 18 character id of the record this tier belongs to. Only needed for objects without their own lookup field above.</inlineHelpText>
+    <type>Text</type>
+    <length>18</length>
+    <externalId>true</externalId>
+    <required>false</required>
+    <unique>false</unique>
+    <trackTrending>false</trackTrending>
+</CustomField>

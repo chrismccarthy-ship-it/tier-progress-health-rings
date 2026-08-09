@@ -32,8 +32,16 @@ Two custom objects joined by a master-detail relationship:
 
 | Object | Purpose |
 |---|---|
-| `Tier__c` | One Account's climb from `Current_Tier__c` to `Next_Tier__c` |
+| `Tier__c` | One record's climb from `Current_Tier__c` to `Next_Tier__c` |
 | `Tier_List_Item__c` | A single weighted requirement on that climb |
+
+A `Tier__c` attaches to whatever the climb belongs to, three ways:
+
+| Field | Covers |
+|---|---|
+| `Account__c` | Accounts, Person Accounts and partner accounts — all one object |
+| `Contact__c` | Contacts, including partner contacts |
+| `Related_Record_Id__c` | Everything else: the standard `Partner` object, PRM records such as `PartnerFundClaim`, or any custom object. Paste the record id in and the ring resolves from that record's page with no schema change. |
 
 Each item carries a `Weight__c` and reports its own `Progress_Percent__c`,
 measured one of two ways:
@@ -84,16 +92,28 @@ hold still under `prefers-reduced-motion`.
 
 ## Placing the component
 
-`tierProgressRing` reads `recordId` and works out the rest:
+The component is not restricted to particular objects, so it appears in
+App Builder on **every** record page. It reads `recordId` and resolves in
+this order, most specific first:
 
-- **On a `Tier__c` record page** — renders that record.
-- **On an Account record page** — finds that Account's tier where
-  `Status__c != 'Achieved'`, falling back to the most recent record so a
-  finished climb still renders instead of an empty state.
-- **On an Account with no tier at all** — renders an empty state, not an
-  error.
-- **Anywhere else** — throws with a message naming the object it was
-  placed on.
+1. **A `Tier__c` id** — renders that record.
+2. **`Account__c` / `Contact__c`** — the typed lookups. A Person Account is
+   one entity with two ids, so a tier recorded against either side surfaces
+   on both its Account page and its Contact page.
+3. **`Related_Record_Id__c`** — the generic pointer, matched against both
+   the 15 and 18 character forms of the id.
+4. **A Contact's Account** — a Contact with no tier of its own falls back
+   to its Account's, which is what a partner contact under a partner
+   account normally wants.
+
+At each step it prefers the tier where `Status__c != 'Achieved'`, falling
+back to the most recent so a finished climb still renders. A record with
+nothing tracked against it renders an empty state rather than an error.
+
+Person Account support is queried dynamically on purpose: `IsPersonAccount`
+and `PersonContactId` only exist once Person Accounts are enabled, and a
+static reference would stop the class compiling in orgs that have not
+turned them on. The package deploys either way.
 
 App Builder properties:
 
@@ -176,9 +196,9 @@ Nothing in the LWC depends on this field; it exists for reporting.
 - **Different categories** — edit the `Category__c` picklist, then
   `CATEGORY_ORDER` in `TierProgressController` (ring order) and
   `CATEGORY_COLORS` in the LWC (arc colour).
-- **Attach to something other than Account** — swap the `Account__c`
-  lookup on `Tier__c` and extend `resolveTierId()` with the new object's
-  branch.
+- **Attach to another object** — set `Related_Record_Id__c` to the record
+  id; no schema or code change needed. Add a dedicated lookup only if you
+  want the referential integrity and report joins that come with one.
 - **Feeding values automatically** — `Current_Value__c` is a plain number
   field, so a scheduled Flow, batch job, or Data Cloud calculated insight
   can write to it and the ring follows.
