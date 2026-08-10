@@ -1,6 +1,6 @@
 # tier-progress-health-rings
 
-An Watch-Health-style progress ring for Salesforce. It shows how far an
+A Watch-Health-style progress ring for Salesforce. It shows how far an
 Account is from its next tier and — the part that actually gets used —
 exactly what is still outstanding to get there.
 
@@ -41,7 +41,7 @@ Two custom objects joined by a master-detail relationship:
 
 ### Tier programmes
 
-`Program__c` says which ladder a record climbs. The three share one picklist
+`Program__c` says which ladder a record climbs. All four share one picklist
 for the level, and the `Level_Matches_Program` validation rule stops a
 Dealer tier being pointed at a Partner level.
 
@@ -71,9 +71,11 @@ resolves to three arcs:
 | Brokerage, Dealer | Production / Compliance / Relationship |
 | Commercial Banking | Compliance / Implementation / Integration |
 
-Adding a fourth programme means three edits: a `Program__c` value, its
+Adding another programme means three edits: a `Program__c` value, its
 levels on `Current_Tier__c` and `Next_Tier__c`, and a branch in the
-validation rule. Colours for new levels go in `TIER_COLORS` at the top of
+validation rule. Both the rule's error message and its description are
+capped at 255 characters, which is tighter than it looks once a fourth
+ladder is spelled out. Colours for new levels go in `TIER_COLORS` at the top of
 `tierProgressRing.js`; a level with no entry falls back to the default blue.
 
 ### Attaching a tier
@@ -120,10 +122,11 @@ and the formula field agree, so the two can't drift apart silently.
 ## The rings
 
 `Tier_List_Item__c.Category__c` decides how many arcs are drawn. Each
-distinct category becomes one concentric ring — outermost first, in the
-order Adoption → Engagement → Advocacy — and the centre always shows the
-overall weighted percentage. Put every item in one category (or none) and
-it collapses to a single ring, which reads better than one lonely arc.
+distinct category becomes one concentric ring, outermost first in the order
+set by `CATEGORY_ORDER` in `TierProgressController`. A tier only ever draws
+from its own programme's family, so the two families never compete for ring
+slots. Put every item in one category (or none) and it collapses to a
+single ring, which reads better than one lonely arc.
 
 Three arcs is the ceiling. A fourth would close over the percentage in the
 middle, so anything past the third category (including the `General`
@@ -192,7 +195,7 @@ Cloud as well as internal record pages.
 force-app/main/default/
 ├── classes/
 │   ├── TierProgressController        @AuraEnabled controller behind the ring
-│   └── TierProgressControllerTest    23 tests
+│   └── TierProgressControllerTest    25 tests
 │
 ├── lwc/
 │   └── tierProgressRing/             the SVG arcs + outstanding list

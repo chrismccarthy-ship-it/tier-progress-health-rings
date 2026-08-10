@@ -7,7 +7,7 @@
  * sitting on, then returns everything the ring needs in one shape:
  *
  *   • the weighted completion percentage toward the next tier
- *   • one ring per Category__c (the concentric Apple-Health-style arcs)
+ *   • one ring per Category__c (the concentric Watch-Health-style arcs)
  *   • the still-outstanding Tier_List_Item__c rows, each with a
  *     human-readable statement of what is left to do
  *

@@ -3,7 +3,7 @@
     <apiVersion>62.0</apiVersion>
     <isExposed>true</isExposed>
     <masterLabel>Tier Progress Ring</masterLabel>
-    <description>Apple Health style progress ring showing weighted completion toward the next tier, plus the requirements still outstanding.</description>
+    <description>Watch-Health style progress ring showing weighted completion toward the next tier, plus the requirements still outstanding.</description>
     <targets>
         <target>lightning__RecordPage</target>
         <target>lightningCommunity__Page</target>
