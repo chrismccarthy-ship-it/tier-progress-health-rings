@@ -35,6 +35,35 @@ Two custom objects joined by a master-detail relationship:
 | `Tier__c` | One record's climb from `Current_Tier__c` to `Next_Tier__c` |
 | `Tier_List_Item__c` | A single weighted requirement on that climb |
 
+### Tier programmes
+
+`Program__c` says which ladder a record climbs. The three share one picklist
+for the level, and the `Level_Matches_Program` validation rule stops a
+Dealer tier being pointed at a Partner level.
+
+| Programme | Levels, low to high |
+|---|---|
+| **Partner** | Silver → Gold → Platinum → Diamond |
+| **Brokerage** | Registered Rep → Producer → Premier Producer → President's Council → Chairman's Circle |
+| **Dealer** | Approved Dealer → Preferred Dealer → Premier Dealer → Elite Dealer → President's Club |
+
+Brokerage uses the producer-recognition language common to broker-dealers
+and wealth managers, keyed on production and AUM. Dealer uses indirect auto
+lending statuses, the kind a captive lender runs for franchise dealers
+against funded contracts, look-to-book and floor plan performance.
+
+Categories follow the programme: Partner tiers use **Adoption /
+Engagement / Advocacy**, Brokerage and Dealer tiers use **Production /
+Compliance / Relationship**. A tier only ever draws from one family, so
+the ring still resolves to three arcs.
+
+Adding a fourth programme means three edits: a `Program__c` value, its
+levels on `Current_Tier__c` and `Next_Tier__c`, and a branch in the
+validation rule. Colours for new levels go in `TIER_COLORS` at the top of
+`tierProgressRing.js`; a level with no entry falls back to the default blue.
+
+### Attaching a tier
+
 A `Tier__c` attaches to whatever the climb belongs to, three ways:
 
 | Field | Covers |
@@ -132,7 +161,7 @@ Cloud as well as internal record pages.
 force-app/main/default/
 ├── classes/
 │   ├── TierProgressController        @AuraEnabled controller behind the ring
-│   └── TierProgressControllerTest    15 tests
+│   └── TierProgressControllerTest    23 tests
 │
 ├── lwc/
 │   └── tierProgressRing/             the SVG arcs + outstanding list
@@ -167,13 +196,23 @@ sf project deploy start \
 # 1. Assign the permission set
 sf org assign permset --name Tier_Progress_User --target-org <alias>
 
-# 2. Seed a worked example — one Account, three categories,
-#    nine requirements, partly complete
-sf apex run --file scripts/apex/seed-tier-progress.apex --target-org <alias>
+# 2. Seed one worked example of each programme
+sf apex run --file scripts/apex/seed-tier-programs.apex --target-org <alias>
 ```
 
-Then drop **Tier Progress Ring** onto the Northwind Treasury Account
-Lightning record page in App Builder.
+That creates three Accounts, each with a partly-complete climb:
+
+| Account | Programme | Climb | Sample requirements |
+|---|---|---|---|
+| Meridian Wealth Partners | Brokerage | Producer → Premier Producer | AUM, net new assets, Reg BI attestations, firm element CE, client retention |
+| Coastal Auto Group | Dealer | Preferred → Premier Dealer | Funded contracts, look-to-book, floor plan utilisation, chargeback rate, CSI, F&I penetration |
+| Northwind Treasury | Partner | Gold → Platinum | Seats activated, certified admins, QBR, exec sponsor, reference call |
+
+Then drop **Tier Progress Ring** onto any of those Account record pages in
+App Builder.
+
+`seed-tier-progress.apex` is still there and seeds the Partner example on
+its own if that is all you need.
 
 The seed script is idempotent — it reuses the Account and Tier by name and
 replaces the child items, so re-running it after edits won't leave

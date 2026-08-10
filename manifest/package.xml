@@ -25,6 +25,7 @@
         <members>Tier__c.Account__c</members>
         <members>Tier__c.Contact__c</members>
         <members>Tier__c.Related_Record_Id__c</members>
+        <members>Tier__c.Program__c</members>
         <members>Tier__c.Current_Tier__c</members>
         <members>Tier__c.Next_Tier__c</members>
         <members>Tier__c.Status__c</members>
@@ -53,6 +54,10 @@
         <members>Tier__c</members>
         <members>Tier_List_Item__c</members>
         <name>CustomTab</name>
+    </types>
+    <types>
+        <members>Tier__c.Level_Matches_Program</members>
+        <name>ValidationRule</name>
     </types>
     <types>
         <members>tierProgressRing</members>

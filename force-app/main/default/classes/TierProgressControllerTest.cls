@@ -26,6 +26,7 @@ private class TierProgressControllerTest {
         Tier__c t = new Tier__c(
             Name          = 'Tiering Test Co to Gold',
             Account__c    = accountId,
+            Program__c    = 'Partner',
             Current_Tier__c = 'Silver',
             Next_Tier__c  = 'Gold',
             Status__c     = status,
@@ -386,6 +387,7 @@ private class TierProgressControllerTest {
         Tier__c t = new Tier__c(
             Name = 'Partner Person to Gold',
             Contact__c = c.Id,
+            Program__c = 'Partner',
             Current_Tier__c = 'Silver',
             Next_Tier__c = 'Gold',
             Status__c = 'In Progress'
@@ -429,6 +431,7 @@ private class TierProgressControllerTest {
         Tier__c contactTier = new Tier__c(
             Name = 'Partner Person to Gold',
             Contact__c = c.Id,
+            Program__c = 'Partner',
             Next_Tier__c = 'Gold',
             Status__c = 'In Progress'
         );
@@ -454,6 +457,7 @@ private class TierProgressControllerTest {
         Tier__c t = new Tier__c(
             Name = 'Generic pointer tier',
             Related_Record_Id__c = c.Id,
+            Program__c = 'Partner',
             Next_Tier__c = 'Gold',
             Status__c = 'In Progress'
         );
@@ -477,6 +481,7 @@ private class TierProgressControllerTest {
         Tier__c t = new Tier__c(
             Name = 'Fifteen char pointer',
             Related_Record_Id__c = String.valueOf(c.Id).substring(0, 15),
+            Program__c = 'Partner',
             Next_Tier__c = 'Gold',
             Status__c = 'In Progress'
         );
@@ -506,6 +511,51 @@ private class TierProgressControllerTest {
 
         System.assertEquals(null, p,
             'A tier with a blank pointer must not match an unrelated record');
+    }
+
+    // ------------------------------------------------------------------
+    // Tier programmes
+    // ------------------------------------------------------------------
+
+    @isTest
+    static void testEachProgrammeAcceptsItsOwnLevels() {
+        Account a = newAccount();
+
+        List<Tier__c> tiers = new List<Tier__c>{
+            new Tier__c(Name = 'Brokerage climb', Account__c = a.Id,
+                Program__c = 'Brokerage', Current_Tier__c = 'Producer',
+                Next_Tier__c = 'Premier Producer', Status__c = 'In Progress'),
+            new Tier__c(Name = 'Dealer climb', Account__c = a.Id,
+                Program__c = 'Dealer', Current_Tier__c = 'Preferred Dealer',
+                Next_Tier__c = 'Premier Dealer', Status__c = 'In Progress'),
+            new Tier__c(Name = 'Partner climb', Account__c = a.Id,
+                Program__c = 'Partner', Current_Tier__c = 'Gold',
+                Next_Tier__c = 'Platinum', Status__c = 'In Progress')
+        };
+
+        insert tiers;
+
+        System.assertEquals(3, [SELECT COUNT() FROM Tier__c WHERE Account__c = :a.Id],
+            'All three programmes should accept their own level names');
+    }
+
+    @isTest
+    static void testALevelFromAnotherProgrammeIsRejected() {
+        Account a = newAccount();
+        Boolean blocked = false;
+
+        try {
+            insert new Tier__c(
+                Name = 'Mismatched climb', Account__c = a.Id,
+                Program__c = 'Dealer',
+                Next_Tier__c = 'Platinum',
+                Status__c = 'In Progress');
+        } catch (DmlException expected) {
+            blocked = true;
+        }
+
+        System.assert(blocked,
+            'Level_Matches_Program should stop a Dealer tier targeting a Partner level');
     }
 
     // ------------------------------------------------------------------

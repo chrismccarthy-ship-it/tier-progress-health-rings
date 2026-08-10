@@ -13,9 +13,16 @@ const STROKE_WIDTH = 15;
 
 /** Colours for the concentric category arcs, outermost first. */
 const CATEGORY_COLORS = {
+    // Partner ladder
     Adoption: '#0176d3',
     Engagement: '#2e844a',
     Advocacy: '#9050e9',
+    // Brokerage and Dealer ladders. Deliberately the same three hues in the
+    // same order — a tier only ever uses one family, so reusing them keeps
+    // the outermost arc reading as "the big one" whichever programme it is.
+    Production: '#0176d3',
+    Compliance: '#2e844a',
+    Relationship: '#9050e9',
     Other: '#fe9339',
     General: '#0176d3'
 };
@@ -23,11 +30,24 @@ const FALLBACK_COLORS = ['#0176d3', '#2e844a', '#9050e9', '#fe9339'];
 
 /** Single-ring colour when the tier has no categories, keyed on the next tier. */
 const TIER_COLORS = {
+    // Partner
     Bronze: '#a45c2b',
     Silver: '#7d8b96',
     Gold: '#c4952b',
     Platinum: '#4a7b8c',
-    Diamond: '#0d9dda'
+    Diamond: '#0d9dda',
+    // Brokerage — producer recognition levels, cool through to gold
+    'Registered Rep': '#7d8b96',
+    Producer: '#0176d3',
+    'Premier Producer': '#5867e8',
+    "President's Council": '#9050e9',
+    "Chairman's Circle": '#c4952b',
+    // Dealer — indirect lending statuses, same climb
+    'Approved Dealer': '#7d8b96',
+    'Preferred Dealer': '#2e844a',
+    'Premier Dealer': '#0176d3',
+    'Elite Dealer': '#9050e9',
+    "President's Club": '#c4952b'
 };
 const DEFAULT_TIER_COLOR = '#0176d3';
 

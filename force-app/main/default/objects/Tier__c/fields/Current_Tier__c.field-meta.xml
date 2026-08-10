@@ -2,7 +2,7 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Current_Tier__c</fullName>
     <label>Current Tier</label>
-    <description>The tier the Account holds today. Rendered on the left of the ring header.</description>
+    <description>The level held today. Same value set as Next_Tier__c plus Unranked for a record that has not entered the programme yet. Rendered on the left of the ring header.</description>
     <type>Picklist</type>
     <required>false</required>
     <valueSet>
@@ -14,11 +14,7 @@
                 <default>true</default>
                 <label>Unranked</label>
             </value>
-            <value>
-                <fullName>Bronze</fullName>
-                <default>false</default>
-                <label>Bronze</label>
-            </value>
+            <!-- Partner program -->
             <value>
                 <fullName>Silver</fullName>
                 <default>false</default>
@@ -38,6 +34,58 @@
                 <fullName>Diamond</fullName>
                 <default>false</default>
                 <label>Diamond</label>
+            </value>
+            <!-- Brokerage program: producer recognition levels -->
+            <value>
+                <fullName>Registered Rep</fullName>
+                <default>false</default>
+                <label>Registered Rep</label>
+            </value>
+            <value>
+                <fullName>Producer</fullName>
+                <default>false</default>
+                <label>Producer</label>
+            </value>
+            <value>
+                <fullName>Premier Producer</fullName>
+                <default>false</default>
+                <label>Premier Producer</label>
+            </value>
+            <value>
+                <fullName>President&apos;s Council</fullName>
+                <default>false</default>
+                <label>President&apos;s Council</label>
+            </value>
+            <value>
+                <fullName>Chairman&apos;s Circle</fullName>
+                <default>false</default>
+                <label>Chairman&apos;s Circle</label>
+            </value>
+            <!-- Dealer program: indirect auto lending dealer statuses -->
+            <value>
+                <fullName>Approved Dealer</fullName>
+                <default>false</default>
+                <label>Approved Dealer</label>
+            </value>
+            <value>
+                <fullName>Preferred Dealer</fullName>
+                <default>false</default>
+                <label>Preferred Dealer</label>
+            </value>
+            <value>
+                <fullName>Premier Dealer</fullName>
+                <default>false</default>
+                <label>Premier Dealer</label>
+            </value>
+            <value>
+                <fullName>Elite Dealer</fullName>
+                <default>false</default>
+                <label>Elite Dealer</label>
+            </value>
+            <value>
+                <fullName>President&apos;s Club</fullName>
+                <default>false</default>
+                <label>President&apos;s Club</label>
             </value>
         </valueSetDefinition>
     </valueSet>

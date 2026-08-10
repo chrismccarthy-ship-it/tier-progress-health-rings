@@ -21,7 +21,10 @@ public with sharing class TierProgressController {
 
     /** Rings render outermost-first in this order; anything else follows alphabetically. */
     private static final List<String> CATEGORY_ORDER = new List<String>{
-        'Adoption', 'Engagement', 'Advocacy'
+        // Partner ladder, then the Brokerage / Dealer ladder. A given tier
+        // only uses one family, so the two never compete for ring slots.
+        'Adoption', 'Engagement', 'Advocacy',
+        'Production', 'Compliance', 'Relationship'
     };
 
     /**
