@@ -28,12 +28,8 @@
                 <div>
                     <lightning-icon icon-name="utility:trending" size="small"
                         class="slds-m-bottom_x-small"></lightning-icon>
-                    <p class="slds-text-body_regular slds-text-color_weak">
-                        No tier progression is being tracked here yet.
-                    </p>
-                    <p class="slds-text-body_small slds-text-color_weak slds-m-top_xx-small">
-                        Create a Tier record with its requirements to light up the ring.
-                    </p>
+                    <p class="empty__lead">No tier progression is being tracked here yet.</p>
+                    <p class="empty__hint">Create a Tier record with its requirements to light up the ring.</p>
                 </div>
             </div>
         </template>
@@ -44,7 +40,7 @@
                 <div class="ring-layout">
 
                     <!-- ------------------------------------------------ -->
-                    <!-- Concentric arcs                                   -->
+                    <!-- Concentric arcs. Each is a filter control.        -->
                     <!-- ------------------------------------------------ -->
                     <div class="ring-wrap">
                         <svg class="ring" viewBox="0 0 200 200" role="img"
@@ -61,48 +57,52 @@
                                         stroke={ring.color}
                                         stroke-width={ring.strokeWidth}
                                         stroke-dasharray={ring.circumference}
-                                        stroke-dashoffset={ring.dashOffset}></circle>
+                                        stroke-dashoffset={ring.dashOffset}
+                                        style={ring.arcStyle}
+                                        data-category={ring.key}
+                                        onclick={handleRingClick}></circle>
                                 </template>
                             </g>
                         </svg>
-
-                        <div class="ring__center" aria-hidden="true">
-                            <span class="ring__percent">{percentLabel}</span>
-                            <template lwc:if={progress.nextTier}>
-                                <span class="ring__caption">to {progress.nextTier}</span>
-                            </template>
-                        </div>
                     </div>
 
                     <!-- ------------------------------------------------ -->
-                    <!-- Summary + legend                                  -->
+                    <!-- Headline, summary, legend                         -->
                     <!-- ------------------------------------------------ -->
                     <div class="ring-summary">
+                        <p class="headline">
+                            <span class="headline__percent">{percentLabel}</span>
+                            <template lwc:if={progress.nextTier}>
+                                <span class="headline__caption">to {progress.nextTier}</span>
+                            </template>
+                        </p>
+
                         <p class="tier-path">
                             <span class="tier-path__from">{currentTierLabel}</span>
-                            <lightning-icon icon-name="utility:forward" size="xx-small"
-                                class="slds-m-horizontal_xx-small"></lightning-icon>
+                            <span class="tier-path__arrow" aria-hidden="true">&rarr;</span>
                             <span class="tier-path__to">{nextTierLabel}</span>
                         </p>
 
-                        <p class="slds-text-body_small slds-text-color_weak slds-m-top_xx-small">
-                            {completionSummary}
-                        </p>
+                        <p class="meta">{completionSummary}</p>
 
                         <template lwc:if={targetDateLabel}>
-                            <p class="slds-text-body_small slds-text-color_weak slds-m-top_xx-small">
-                                Target date: {targetDateLabel}
-                            </p>
+                            <p class="meta">Target date: {targetDateLabel}</p>
                         </template>
 
                         <template lwc:if={showLegend}>
-                            <ul class="legend slds-m-top_small">
+                            <ul class="legend">
                                 <template for:each={displayRings} for:item="ring">
-                                    <li key={ring.key} class="legend__row">
-                                        <span class="legend__dot" style={ring.swatchStyle}></span>
-                                        <span class="legend__label">{ring.label}</span>
-                                        <span class="legend__value">{ring.percentLabel}</span>
-                                        <span class="legend__count">{ring.countLabel}</span>
+                                    <li key={ring.key}>
+                                        <button type="button" class={ring.legendClass}
+                                            data-category={ring.key}
+                                            aria-pressed={ring.isActive}
+                                            title={ring.filterHint}
+                                            onclick={handleRingClick}>
+                                            <span class="legend__dot" style={ring.swatchStyle}></span>
+                                            <span class="legend__label">{ring.label}</span>
+                                            <span class="legend__value">{ring.percentLabel}</span>
+                                            <span class="legend__count">{ring.countLabel}</span>
+                                        </button>
                                     </li>
                                 </template>
                             </ul>
@@ -114,15 +114,20 @@
                 <!-- What is still outstanding                             -->
                 <!-- ---------------------------------------------------- -->
                 <template lwc:if={showOutstanding}>
-                    <div class="outstanding slds-m-top_medium">
-                        <h3 class="slds-text-title_caps slds-text-color_weak slds-m-bottom_x-small">
-                            {outstandingHeading}
-                        </h3>
+                    <div class="outstanding">
+                        <div class="outstanding__header">
+                            <h3 class="outstanding__heading">{outstandingHeading}</h3>
+                            <template lwc:if={activeCategory}>
+                                <button type="button" class="clear-filter" onclick={handleClearFilter}>
+                                    Show all
+                                </button>
+                            </template>
+                        </div>
 
-                        <template lwc:if={hasOutstanding}>
+                        <template lwc:if={hasVisibleOutstanding}>
                             <ul class="outstanding__list">
                                 <template for:each={visibleOutstanding} for:item="item">
-                                    <li key={item.id} class="outstanding__item">
+                                    <li key={item.id}>
                                         <div class="outstanding__head">
                                             <span class="outstanding__label">{item.label}</span>
                                             <span class="outstanding__percent">{item.percentLabel}</span>
@@ -150,10 +155,14 @@
                             </ul>
 
                             <template lwc:if={hiddenOutstandingLabel}>
-                                <p class="slds-text-body_small slds-text-color_weak slds-m-top_x-small">
-                                    {hiddenOutstandingLabel}
-                                </p>
+                                <p class="meta meta--pad">{hiddenOutstandingLabel}</p>
                             </template>
+                        </template>
+
+                        <template lwc:elseif={activeCategory}>
+                            <div class="all-clear">
+                                <span>Nothing outstanding in {activeCategory}.</span>
+                            </div>
                         </template>
 
                         <template lwc:else>

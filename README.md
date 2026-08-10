@@ -5,23 +5,27 @@ Account is from its next tier and — the part that actually gets used —
 exactly what is still outstanding to get there.
 
 ```
-            ╭───────────────╮
-         ╭──┤   Adoption    ├──╮        Silver → Gold
-        │  ╭┤  Engagement  ├╮  │        Northwind Treasury
-        │  │╭┤  Advocacy  ├╮│  │        2 of 9 requirements complete
-        │  ││    ┌────┐    ││  │        Target date: 21 Oct 2026
-        │  ││    │ 55%│    ││  │
-        │  ││    │ to │    ││  │        ● Adoption    74%  1 of 3 done
-        │  ││    │Gold│    ││  │        ● Engagement  59%  1 of 3 done
-        │  ╰╯    └────┘    ╰╯  │        ● Advocacy    15%  0 of 3 done
-        ╰──────────────────────╯
-        ────────────────────────────────────────────────
+        ╭──────────────╮      74%  to Premier Producer
+      ╭─┤  Production  ├─╮
+     ╭┤ ╭┤ Compliance ├╮ ├╮   Producer → Premier Producer
+     ││ ││Relationship││ ││   Meridian Wealth Partners
+     ││ ││            ││ ││   2 of 9 requirements complete
+     ││ ╰╯            ╰╯ ││   Target date: 7 Dec 2026
+     ╰┤                  ├╯
+      ╰──────────────────╯    ● Production    78%   0 of 3 done
+                              ● Compliance    69%   1 of 3 done
+                              ● Relationship  74%   1 of 3 done
+        ─────────────────────────────────────────────────
         7 REQUIREMENTS OUTSTANDING
-        Executive sponsor named                      0%
-        ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
-        [Engagement]  Not started yet
-        Confirm the COO as sponsor at the next steering committee.
+        Assets under management                       77%
+        ████████████████████████████░░░░░░░░░░░░░░░░░░░░░
+        [Production]  385 of 500 $M · 115 $M to go
+        Three institutional mandates in final diligence
+        would close most of the gap.
 ```
+
+Click any arc — or any legend row — to filter the list to that category.
+
 
 Self-contained SFDX project — no managed packages, no external services,
 no dependencies beyond a standard Salesforce org with Accounts.
@@ -118,6 +122,23 @@ innermost arc and is relabelled **Other**.
 
 Arcs sweep from empty on load via a `stroke-dashoffset` transition, and
 hold still under `prefers-reduced-motion`.
+
+The overall percentage sits **beside** the rings rather than inside them.
+Three arcs leave a hole barely wider than the number itself, and the
+"to *tier*" caption never fitted at all.
+
+Clicking an arc, or its legend row, filters the outstanding list to that
+category; the other arcs dim so the ring shows what the list is scoped to.
+Clicking again clears it, as does **Show all**. The legend rows are real
+buttons, so the filter is reachable from the keyboard — the arcs are a
+convenience on top, not the only way in.
+
+Colours come from **SLDS global styling hooks** with light-theme fallbacks,
+not from `prefers-color-scheme`. Lightning Experience renders its own theme
+regardless of the operating system setting, so a `prefers-color-scheme`
+block turns the text light on a white card for every user whose OS is in
+dark mode. Styling hooks follow Salesforce instead, which also means the
+component picks up SLDS 2 dark mode for free wherever an org enables it.
 
 ## Placing the component
 

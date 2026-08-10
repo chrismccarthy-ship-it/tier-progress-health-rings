@@ -68,6 +68,9 @@ export default class TierProgressRing extends LightningElement {
     // from. Without this the ring simply appears at its final value.
     animate = false;
 
+    /** Category currently filtering the outstanding list, or '' for none. */
+    activeCategory = '';
+
     _wiredResult;
     _animationQueued = false;
 
@@ -87,6 +90,7 @@ export default class TierProgressRing extends LightningElement {
         if (data !== undefined) {
             this.progress = data === null ? undefined : data;
             this.errorMessage = '';
+            this.activeCategory = '';
             // Replay the sweep whenever fresh numbers arrive.
             this.animate = false;
             this._animationQueued = false;
@@ -140,6 +144,11 @@ export default class TierProgressRing extends LightningElement {
             const drawn = this.animate ? actual : 0;
             const color = this.colorForRing(ring.key, index);
 
+            // Dim the arcs that are not the active filter, so the ring
+            // itself shows what the list below is scoped to.
+            const isActive = this.activeCategory !== '' && this.coversActive(ring);
+            const dimmed = this.activeCategory !== '' && !isActive;
+
             return {
                 key: ring.key,
                 trackKey: `${ring.key}-track`,
@@ -151,7 +160,13 @@ export default class TierProgressRing extends LightningElement {
                 dashOffset: (circumference * (1 - drawn / 100)).toFixed(2),
                 percentLabel: `${Math.round(actual)}%`,
                 countLabel: `${ring.itemsComplete} of ${ring.itemsTotal} done`,
-                swatchStyle: `background-color: ${color};`
+                swatchStyle: `background-color: ${color};`,
+                arcStyle: dimmed ? 'opacity: 0.25;' : '',
+                isActive,
+                legendClass: isActive ? 'legend__row legend__row_active' : 'legend__row',
+                filterHint: isActive
+                    ? `Showing ${ring.label} only. Click to show everything.`
+                    : `Show only ${ring.label} requirements`
             };
         });
     }
@@ -238,10 +253,33 @@ export default class TierProgressRing extends LightningElement {
         return this.outstandingItems.length > 0;
     }
 
+    /** Categories folded into a ring — usually one, more for a merged arc. */
+    categoriesFor(ringKey) {
+        const ring = ((this.progress && this.progress.rings) || []).find(
+            (r) => r.key === ringKey
+        );
+        return (ring && ring.categories) || [];
+    }
+
+    coversActive(ring) {
+        return (ring.categories || []).includes(this.activeCategory);
+    }
+
+    get filteredOutstanding() {
+        if (!this.activeCategory) return this.outstandingItems;
+        return this.outstandingItems.filter(
+            (item) => item.category === this.activeCategory
+        );
+    }
+
+    get hasVisibleOutstanding() {
+        return this.visibleOutstanding.length > 0;
+    }
+
     get visibleOutstanding() {
         const limit = Number(this.maxOutstanding) || 0;
-        const items =
-            limit > 0 ? this.outstandingItems.slice(0, limit) : this.outstandingItems;
+        const source = this.filteredOutstanding;
+        const items = limit > 0 ? source.slice(0, limit) : source;
 
         return items.map((item) => {
             const pct = this.clampPercent(item.percent);
@@ -265,14 +303,17 @@ export default class TierProgressRing extends LightningElement {
     }
 
     get outstandingHeading() {
-        const count = this.outstandingItems.length;
-        if (count === 0) return 'Outstanding';
-        return count === 1 ? '1 requirement outstanding' : `${count} requirements outstanding`;
+        const count = this.filteredOutstanding.length;
+        const scope = this.activeCategory ? `${this.activeCategory} ` : '';
+        if (count === 0) return this.activeCategory ? `${this.activeCategory} — all done` : 'Outstanding';
+        return count === 1
+            ? `1 ${scope}requirement outstanding`
+            : `${count} ${scope}requirements outstanding`;
     }
 
     get hiddenOutstandingLabel() {
         const limit = Number(this.maxOutstanding) || 0;
-        const hidden = limit > 0 ? this.outstandingItems.length - limit : 0;
+        const hidden = limit > 0 ? this.filteredOutstanding.length - limit : 0;
         if (hidden <= 0) return '';
         return hidden === 1 ? '1 more not shown' : `${hidden} more not shown`;
     }
@@ -287,6 +328,28 @@ export default class TierProgressRing extends LightningElement {
     // ------------------------------------------------------------------
     // Actions
     // ------------------------------------------------------------------
+
+    /**
+     * Toggles the filter. Fired by both the arcs and the legend rows, so the
+     * two stay in step. An 'overall' ring covers everything, so it has
+     * nothing to filter down to.
+     */
+    handleRingClick(event) {
+        const key = event.currentTarget.dataset.category;
+        if (!key || key === 'overall') return;
+
+        const categories = this.categoriesFor(key);
+        if (!categories.length) return;
+
+        // A merged "Other" arc covers several categories; filtering picks the
+        // first, which is the only one a single click can mean unambiguously.
+        const target = categories[0];
+        this.activeCategory = this.activeCategory === target ? '' : target;
+    }
+
+    handleClearFilter() {
+        this.activeCategory = '';
+    }
 
     handleRefresh() {
         if (!this._wiredResult) return;

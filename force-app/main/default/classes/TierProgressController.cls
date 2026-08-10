@@ -47,6 +47,9 @@ public with sharing class TierProgressController {
         @AuraEnabled public Decimal percent;
         @AuraEnabled public Integer itemsTotal;
         @AuraEnabled public Integer itemsComplete;
+        /** Every category folded into this arc. Usually one; more when
+            categories past MAX_RINGS merge into the innermost. */
+        @AuraEnabled public List<String> categories;
     }
 
     public class OutstandingItem {
@@ -363,6 +366,7 @@ public with sharing class TierProgressController {
             overall.percent       = overallPercent;
             overall.itemsTotal    = 0;
             overall.itemsComplete = 0;
+            overall.categories    = new List<String>(categories);
             for (String category : categories) {
                 overall.itemsTotal    += totalByCategory.get(category);
                 overall.itemsComplete += doneByCategory.get(category);
@@ -388,6 +392,7 @@ public with sharing class TierProgressController {
                 ring.percent       = 0;
                 ring.itemsTotal    = 0;
                 ring.itemsComplete = 0;
+                ring.categories    = new List<String>();
                 rings.add(ring);
                 slotWeight.add(0);
                 slotEarned.add(0);
@@ -399,6 +404,7 @@ public with sharing class TierProgressController {
             }
 
             RingData target = rings[slot];
+            target.categories.add(category);
             target.itemsTotal    += totalByCategory.get(category);
             target.itemsComplete += doneByCategory.get(category);
             slotWeight.set(slot, slotWeight[slot] + weightByCategory.get(category));
