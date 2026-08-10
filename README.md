@@ -1,6 +1,6 @@
 # tier-progress-health-rings
 
-An Apple-Health-style progress ring for Salesforce. It shows how far an
+An Watch-Health-style progress ring for Salesforce. It shows how far an
 Account is from its next tier and — the part that actually gets used —
 exactly what is still outstanding to get there.
 
