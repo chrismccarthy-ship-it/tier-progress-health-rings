@@ -2,7 +2,7 @@
 <ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Level_Matches_Program</fullName>
     <active>true</active>
-    <description>Stops a Dealer tier being pointed at a Brokerage level, and so on. The three ladders share one picklist, so without this any level is selectable on any programme. Pipe delimiters keep CONTAINS from matching a level name inside a longer one.</description>
+    <description>Error message must stay under 255 characters, which is why the ladders are abbreviated rather than spelled out. Stops a Dealer tier being pointed at a Brokerage level, and so on. The three ladders share one picklist, so without this any level is selectable on any programme. Pipe delimiters keep CONTAINS from matching a level name inside a longer one.</description>
     <errorConditionFormula>AND(
   NOT(ISPICKVAL(Program__c, &quot;&quot;)),
   NOT(ISPICKVAL(Next_Tier__c, &quot;&quot;)),
@@ -17,5 +17,5 @@
   ))
 )</errorConditionFormula>
     <errorDisplayField>Next_Tier__c</errorDisplayField>
-    <errorMessage>That level does not belong to this programme. Partner uses Silver, Gold, Platinum and Diamond. Brokerage uses Registered Rep through Chairman&apos;s Circle. Dealer uses Approved Dealer through President&apos;s Club. Commercial Banking uses Applicant, Onboarding and Treasury Live.</errorMessage>
+    <errorMessage>That level does not belong to this programme. Partner: Silver to Diamond. Brokerage: Registered Rep to Chairman&apos;s Circle. Dealer: Approved Dealer to President&apos;s Club. Commercial Banking: Applicant to Treasury Live.</errorMessage>
 </ValidationRule>
