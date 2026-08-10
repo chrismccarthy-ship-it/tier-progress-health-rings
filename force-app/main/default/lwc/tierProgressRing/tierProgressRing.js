@@ -23,6 +23,9 @@ const CATEGORY_COLORS = {
     Production: '#0176d3',
     Compliance: '#2e844a',
     Relationship: '#9050e9',
+    // Commercial Banking ladder reuses Compliance, so its own two follow on
+    Implementation: '#0176d3',
+    Integration: '#9050e9',
     Other: '#fe9339',
     General: '#0176d3'
 };
@@ -47,7 +50,11 @@ const TIER_COLORS = {
     'Preferred Dealer': '#2e844a',
     'Premier Dealer': '#0176d3',
     'Elite Dealer': '#9050e9',
-    "President's Club": '#c4952b'
+    "President's Club": '#c4952b',
+    // Commercial Banking - treasury onboarding stages
+    Applicant: '#7d8b96',
+    Onboarding: '#0176d3',
+    'Treasury Live': '#2e844a'
 };
 const DEFAULT_TIER_COLOR = '#0176d3';
 

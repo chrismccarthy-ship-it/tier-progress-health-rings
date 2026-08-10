@@ -25,6 +25,11 @@
                 <default>false</default>
                 <label>Dealer</label>
             </value>
+            <value>
+                <fullName>Commercial Banking</fullName>
+                <default>false</default>
+                <label>Commercial Banking</label>
+            </value>
         </valueSetDefinition>
     </valueSet>
 </CustomField>

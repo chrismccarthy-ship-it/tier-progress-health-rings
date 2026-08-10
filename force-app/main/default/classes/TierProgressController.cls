@@ -24,7 +24,8 @@ public with sharing class TierProgressController {
         // Partner ladder, then the Brokerage / Dealer ladder. A given tier
         // only uses one family, so the two never compete for ring slots.
         'Adoption', 'Engagement', 'Advocacy',
-        'Production', 'Compliance', 'Relationship'
+        'Production', 'Compliance', 'Relationship',
+        'Implementation', 'Integration'
     };
 
     /**

@@ -2,7 +2,7 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Category__c</fullName>
     <label>Category</label>
-    <description>Groups requirements into the concentric rings. Partner tiers use Adoption / Engagement / Advocacy; Brokerage and Dealer tiers use Production / Compliance / Relationship. Leave blank on every item to get a single ring instead.</description>
+    <description>Groups requirements into the concentric rings. Partner tiers use Adoption / Engagement / Advocacy; Brokerage and Dealer tiers use Production / Compliance / Relationship; Commercial Banking tiers use Compliance / Implementation / Integration. Leave blank on every item to get a single ring instead.</description>
     <inlineHelpText>Each distinct category becomes its own ring, outermost first (Adoption, Engagement, Advocacy).</inlineHelpText>
     <type>Picklist</type>
     <required>false</required>
@@ -39,6 +39,16 @@
                 <fullName>Relationship</fullName>
                 <default>false</default>
                 <label>Relationship</label>
+            </value>
+            <value>
+                <fullName>Implementation</fullName>
+                <default>false</default>
+                <label>Implementation</label>
+            </value>
+            <value>
+                <fullName>Integration</fullName>
+                <default>false</default>
+                <label>Integration</label>
             </value>
         </valueSetDefinition>
     </valueSet>

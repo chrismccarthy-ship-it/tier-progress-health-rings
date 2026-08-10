@@ -50,16 +50,26 @@ Dealer tier being pointed at a Partner level.
 | **Partner** | Silver → Gold → Platinum → Diamond |
 | **Brokerage** | Registered Rep → Producer → Premier Producer → President's Council → Chairman's Circle |
 | **Dealer** | Approved Dealer → Preferred Dealer → Premier Dealer → Elite Dealer → President's Club |
+| **Commercial Banking** | Applicant → Onboarding → Treasury Live |
 
 Brokerage uses the producer-recognition language common to broker-dealers
 and wealth managers, keyed on production and AUM. Dealer uses indirect auto
 lending statuses, the kind a captive lender runs for franchise dealers
 against funded contracts, look-to-book and floor plan performance.
 
-Categories follow the programme: Partner tiers use **Adoption /
-Engagement / Advocacy**, Brokerage and Dealer tiers use **Production /
-Compliance / Relationship**. A tier only ever draws from one family, so
-the ring still resolves to three arcs.
+Commercial Banking is a different shape from the other three — a sequence
+of onboarding gates rather than a metrics climb. It shows that the same
+ring works for a journey: the arcs become phases, and "what is still
+outstanding" becomes the implementation checklist.
+
+Categories follow the programme, three per family so the ring always
+resolves to three arcs:
+
+| Programme | Categories |
+|---|---|
+| Partner | Adoption / Engagement / Advocacy |
+| Brokerage, Dealer | Production / Compliance / Relationship |
+| Commercial Banking | Compliance / Implementation / Integration |
 
 Adding a fourth programme means three edits: a `Program__c` value, its
 levels on `Current_Tier__c` and `Next_Tier__c`, and a branch in the
@@ -234,6 +244,12 @@ App Builder.
 
 `seed-tier-progress.apex` is still there and seeds the Partner example on
 its own if that is all you need.
+
+`seed-techco-onboarding.apex` seeds a fourth example — a Commercial Banking
+treasury onboarding — but targets a specific Account **by record id**, so
+it only works in the org that record lives in. Change `ACCOUNT_ID` at the
+top before running it elsewhere. It looks the Account up rather than
+creating one, and stops with a clear message if the id does not resolve.
 
 The seed script is idempotent — it reuses the Account and Tier by name and
 replaces the child items, so re-running it after edits won't leave

@@ -11,10 +11,11 @@
       &quot;Partner&quot;,   &quot;|Silver|Gold|Platinum|Diamond|&quot;,
       &quot;Brokerage&quot;, &quot;|Registered Rep|Producer|Premier Producer|President&apos;s Council|Chairman&apos;s Circle|&quot;,
       &quot;Dealer&quot;,    &quot;|Approved Dealer|Preferred Dealer|Premier Dealer|Elite Dealer|President&apos;s Club|&quot;,
+      &quot;Commercial Banking&quot;, &quot;|Applicant|Onboarding|Treasury Live|&quot;,
       &quot;&quot;),
     &quot;|&quot; &amp; TEXT(Next_Tier__c) &amp; &quot;|&quot;
   ))
 )</errorConditionFormula>
     <errorDisplayField>Next_Tier__c</errorDisplayField>
-    <errorMessage>That level does not belong to this programme. Partner uses Silver, Gold, Platinum and Diamond. Brokerage uses Registered Rep through Chairman&apos;s Circle. Dealer uses Approved Dealer through President&apos;s Club.</errorMessage>
+    <errorMessage>That level does not belong to this programme. Partner uses Silver, Gold, Platinum and Diamond. Brokerage uses Registered Rep through Chairman&apos;s Circle. Dealer uses Approved Dealer through President&apos;s Club. Commercial Banking uses Applicant, Onboarding and Treasury Live.</errorMessage>
 </ValidationRule>

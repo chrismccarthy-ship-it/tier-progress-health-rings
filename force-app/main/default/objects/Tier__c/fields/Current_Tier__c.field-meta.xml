@@ -87,6 +87,22 @@
                 <default>false</default>
                 <label>President&apos;s Club</label>
             </value>
+            <!-- Commercial Banking program: treasury onboarding stages -->
+            <value>
+                <fullName>Applicant</fullName>
+                <default>false</default>
+                <label>Applicant</label>
+            </value>
+            <value>
+                <fullName>Onboarding</fullName>
+                <default>false</default>
+                <label>Onboarding</label>
+            </value>
+            <value>
+                <fullName>Treasury Live</fullName>
+                <default>false</default>
+                <label>Treasury Live</label>
+            </value>
         </valueSetDefinition>
     </valueSet>
 </CustomField>
