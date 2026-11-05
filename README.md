@@ -60,6 +60,23 @@ sf org assign permset --name Tier_Progress_User --target-org <alias>
 sf apex run --file scripts/apex/seed-tier-programs.apex --target-org <alias>
 ```
 
+### Several orgs at once
+
+`scripts/deploy-all.ps1` runs that whole sequence against each org in turn,
+carries on past a failure so one bad alias does not cost you the others, and
+prints a summary:
+
+```powershell
+.\scripts\deploy-all.ps1                      # devhub, sdo26, 1010sdo
+.\scripts\deploy-all.ps1 -Orgs devhub,sdo26
+.\scripts\deploy-all.ps1 -SkipTests -SkipSeed
+.\scripts\deploy-all.ps1 -TechcoOrg devhub   # also seed Techco, there only
+```
+
+It checks each alias resolves before doing anything, tolerates an
+already-assigned permission set, and skips the Techco seed everywhere except
+the org you name — that script targets a hard-coded record id.
+
 Then **Setup → Object Manager → Account → Lightning Record Pages**, edit the
 page, drag **Tier Progress Ring** onto it, Save and Activate. Open
 **Meridian Wealth Partners**, **Coastal Auto Group** or **Northwind
