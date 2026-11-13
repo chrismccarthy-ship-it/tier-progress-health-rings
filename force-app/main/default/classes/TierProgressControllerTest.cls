@@ -49,6 +49,23 @@ private class TierProgressControllerTest {
         );
     }
 
+    /**
+     * A well-formed Case id for a record that does not exist.
+     *
+     * The generic-pointer tests only need an id to match against
+     * Related_Record_Id__c — resolveTierId never queries the pointed-at
+     * record itself, so there is nothing for a real row to contribute.
+     * Inserting one drags in whatever flows and triggers the org happens to
+     * have on Case creation, which is what broke these tests in a demo org
+     * carrying a packaged Case automation. Synthetic ids keep the suite
+     * portable across orgs.
+     *
+     * @param tail the 12 characters following the Case key prefix.
+     */
+    private static Id syntheticCaseId(String tail) {
+        return Id.valueOf('500' + tail);
+    }
+
     private static Tier_List_Item__c numericItem(
         Id tierId, String name, String category, Decimal weight,
         Decimal current, Decimal target, String unit
@@ -350,9 +367,9 @@ private class TierProgressControllerTest {
 
     @isTest
     static void testUnrelatedRecordRendersEmptyStateRatherThanThrowing() {
-        // A well-formed 15-character Case id with nothing tracked against it.
-        // The ring can now sit on any object, so this is an empty state.
-        Id caseId = Id.valueOf('500000000000000');
+        // A well-formed Case id with nothing tracked against it. The ring can
+        // now sit on any object, so this is an empty state.
+        Id caseId = syntheticCaseId('000000000000');
 
         TierProgressController.TierProgress p =
             TierProgressController.getTierProgress(caseId);
@@ -451,12 +468,11 @@ private class TierProgressControllerTest {
      */
     @isTest
     static void testResolvesFromTheGenericRelatedRecordPointer() {
-        Case c = new Case(Subject = 'Stands in for a partner record');
-        insert c;
+        Id caseId = syntheticCaseId('000000000001');
 
         Tier__c t = new Tier__c(
             Name = 'Generic pointer tier',
-            Related_Record_Id__c = c.Id,
+            Related_Record_Id__c = String.valueOf(caseId),
             Program__c = 'Partner',
             Next_Tier__c = 'Gold',
             Status__c = 'In Progress'
@@ -465,7 +481,7 @@ private class TierProgressControllerTest {
         insert checkboxItem(t.Id, 'Only item', 'Adoption', 1, true);
 
         TierProgressController.TierProgress p =
-            TierProgressController.getTierProgress(c.Id);
+            TierProgressController.getTierProgress(caseId);
 
         System.assertNotEquals(null, p,
             'The generic pointer should resolve from an arbitrary object');
@@ -475,12 +491,11 @@ private class TierProgressControllerTest {
 
     @isTest
     static void testGenericPointerMatchesAFifteenCharacterId() {
-        Case c = new Case(Subject = 'Fifteen character id');
-        insert c;
+        Id caseId = syntheticCaseId('000000000002');
 
         Tier__c t = new Tier__c(
             Name = 'Fifteen char pointer',
-            Related_Record_Id__c = String.valueOf(c.Id).substring(0, 15),
+            Related_Record_Id__c = String.valueOf(caseId).substring(0, 15),
             Program__c = 'Partner',
             Next_Tier__c = 'Gold',
             Status__c = 'In Progress'
@@ -488,7 +503,7 @@ private class TierProgressControllerTest {
         insert t;
 
         TierProgressController.TierProgress p =
-            TierProgressController.getTierProgress(c.Id);
+            TierProgressController.getTierProgress(caseId);
 
         System.assertNotEquals(null, p,
             'A hand-typed 15 character id should still match');
@@ -503,11 +518,10 @@ private class TierProgressControllerTest {
         Tier__c unrelated = newTier(a.Id, 'In Progress');
         System.assertNotEquals(null, unrelated.Id, 'Fixture should exist');
 
-        Case c = new Case(Subject = 'Nothing points at me');
-        insert c;
+        Id caseId = syntheticCaseId('000000000003');
 
         TierProgressController.TierProgress p =
-            TierProgressController.getTierProgress(c.Id);
+            TierProgressController.getTierProgress(caseId);
 
         System.assertEquals(null, p,
             'A tier with a blank pointer must not match an unrelated record');

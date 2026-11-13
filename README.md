@@ -564,7 +564,8 @@ Nothing in the LWC depends on this field; it exists for reporting.
 
 ## Verification status
 
-Confirmed working in a live org (Salesforce API v67):
+Confirmed working in a live org (source API v62, deployed through the v68
+SOAP API, 37/37 components):
 
 - Both custom objects and all 26 fields
 - The roll-up summaries, including the formula-checkbox filter on
@@ -573,14 +574,28 @@ Confirmed working in a live org (Salesforce API v67):
 - The weighted arithmetic, matching hand calculation to the decimal
 - `seed-tier-programs.apex`, producing the three rings above
 - The LWC rendering on an Account record page
+- The Apex suite, run against that org: `TierProgressController` at 94%
+  line coverage
+- Contact resolution, including the fall back to the account tier
 
-Not yet exercised anywhere:
+Known gaps:
 
-- The 25 Apex tests have never been run against an org
-- Contact and `Related_Record_Id__c` resolution have unit tests but no
-  live confirmation
+- 22 of the 25 tests passed on that run. The three generic-pointer tests
+  failed on an `insert` of a `Case`, because the org carried a packaged
+  flow on Case creation that errored before the assertion was reached —
+  nothing to do with this code. Those tests have since been rewritten to
+  use synthetic ids and no DML on `Case`, which removes the dependency on
+  org automation entirely. **That rewrite has not itself been run against
+  an org yet.**
+- `Related_Record_Id__c` resolution therefore still rests on unit tests
+  with no live confirmation.
 - The Person Account branch is untested — it needs an org with Person
-  Accounts enabled
+  Accounts enabled.
+- `deploy-all.ps1` has never been run.
+- A negative `Current_Value__c` diverges between the two implementations:
+  `Progress_Percent__c` returns the raw negative, while `itemPercent()`
+  clamps to 0. Only reachable by typing a negative value, but the formula
+  field and the ring would disagree if you did.
 
 ---
 
